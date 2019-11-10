@@ -17,16 +17,14 @@ class myThread (threading.Thread):
         
     def run(self):
         try:
-            print(self.data)
-            print(self.time)
+            # print(self.data)
+            # print(self.time)
 
             rawData = self.data.split("\r\n")
             rawData.pop()
 
             for dataItem in rawData:
-                
                 data = dataItem.split("; ")
-
                 dbData = {}
 
                 for item in data:
@@ -69,6 +67,7 @@ while True:
     lastAddr = addr
 
     newThread = myThread(data, currentTime)
+
     newThread.start()
 
 udps.close()

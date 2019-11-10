@@ -5,9 +5,9 @@ import threading
 from pymongo import MongoClient
 
 client = MongoClient()
-
+production_env = True
 host = "0.0.0.0"
-port = 7670
+port = 55880
 
 Latitude = ""
 Longitude = ""
@@ -37,14 +37,15 @@ class myThread (threading.Thread):
             
             try:
                 rawData = self.mySocket.recv(8192).decode()
+                print("recv: " + rawData)
 
                 From = rawData.replace(";",":").split(": ")
 
-                if "Phone" in From:
+                if not production_env or "Phone" in From:
 
-                    rawData = rawData.split("\r\n")
+                    rawData = rawData.split("\r\n") if production_env else rawData
 
-                    for dataItem in rawData:
+                    for dataItem in [rawData] if not production_env else rawData:
 
                         if dataItem != "":
 
@@ -53,18 +54,22 @@ class myThread (threading.Thread):
                                 dataTemp = ""
                                 dataFlag = False
 
-                            print(dataItem)
-                            
+
                             data = dataItem.split("; ")
 
-                            dbData = {}
+                            dbData = {
 
+                            }
                             for item in data:
                                 if item != "":
                                     items = item.split(": ")
                                     if (len(items) == 2 and items[1] != ""):
                                         if (items[0] == "Time"):
-                                            dbData['Time'] = items[1]
+                                            timestr = dbData['Time'] = items[1]
+                                            # print(timestr)
+                                            duration = time.time() - float(timestr)
+                                            print(duration * 1000)
+                                            dbData['sentDurationMs'] = duration * 1000
                                         if (items[0] == "CSQ"):
                                             dbData['CSQ'] = items[1]
                                         if (items[0] == "Index"):
@@ -75,6 +80,9 @@ class myThread (threading.Thread):
                                             dbData['Latitude'] = items[1]
                                         if (items[0] == "Long"):
                                             dbData['Longitude'] = items[1]
+                                        if (item[0] == "Network"):
+                                            dbData['Network'] = items[1]
+
 
                             if Latitude != "":
                                 dbData['Latitude'] = Latitude
@@ -86,9 +94,11 @@ class myThread (threading.Thread):
                                 dbData['Height'] = Height
 
                             if (("Time" in dbData) and ("CSQ" in dbData) and ("Index" in dbData) and ("Height" in dbData)):
-                                mongo = client.surf
-                                table = mongo[self.time]
-                                table.insert_one(dbData)
+                                if production_env:
+                                    mongo = client.surf
+                                    table = mongo[self.time]
+                                    table.insert_one(dbData)
+                                    pass
                             else:
                                 dataTemp = dataItem
                                 dataFlag = True
@@ -122,7 +132,7 @@ class myThread (threading.Thread):
                     self.mySocket.close()
                     print("Connection Ended by Client\n")
                     break
-                
+                self.mySocket.sendall(bytes('finish', 'utf-8'))
             except Exception as err:
                 self.mySocket.shutdown(2)
                 self.mySocket.close()

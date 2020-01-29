@@ -21,7 +21,7 @@ month={Oct},}
 
 The folder contains the Android source code of the client software used in our experiment. You need to download an Android Studio to compile it to any cell phone.
 
-![avatar](http://lukerr.com/image/cellphone.jpg)
+![avatar](https://imgs.xjtluwall.com/lukerr/cellphone.jpg)
 
 PS: you can edit the IP address in the source code to start your own demo.
 

@@ -1,5 +1,7 @@
 This repository is for the source code and data used in ICII 2018 paper "4G Network for Air-ground Data Transimission: A Drone based Experiment".
 
+![4g](https://cdn.lukerr.com/site/4g.jpg)
+
 If you are interested in our project, you can cite the paper:
 
 ```
@@ -21,7 +23,7 @@ month={Oct},}
 
 The folder contains the Android source code of the client software used in our experiment. You need to download an Android Studio to compile it to any cell phone.
 
-![avatar](https://imgs.xjtluwall.com/lukerr/cellphone.jpg)
+![avatar](https://cdn.lukerr.com/site/cellphone.jpg)
 
 PS: you can edit the IP address in the source code to start your own demo.
 
